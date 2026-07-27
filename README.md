@@ -1,11 +1,3 @@
-<!-- README Outline
-      0. Title
-      1. Briefish description of the project
-      2. Briefish description of results (just provide a table?)
-      3. How to run (provide specific commands & other info)
-      4. References if applicable
-      5. BibTeX citation-->
-
 # Machine Morality: <i>An ethics-forward approach to social<br>reasoning in multi-agent systems</i>
 To succeed as a human-facing technology, large language models (LLMs) must navigate nuanced, delicate, and otherwise complex social environments safely and intelligently. However, their subpar social reasoning (SR) abilities make for uneven performance and have already caused serious real-world harms. To address the SR limitations of lone LLMs, we created a MAS founded on robust ethical and theory-of-mind reasoning processes. 
 
@@ -62,14 +54,28 @@ A response agent, powered by the framework agent, takes as input the user prompt
 
 We tested the pipeline with Google's Gemma 4 model (with 4, 12, and 26 billion parameters) on Jiao et al.'s LLM Ethics Benchmark. Our pipeline improves value consistency (ECM) and reasoning quality (RQI) compared to the base model. However, it decreases moral alignment compared to the base model.
 
-## Running the pipeline <!--(need to figure this out; remember that benchmark stuff also has to be there)-->
-* Set up virtual env (recommended)
+## Running the pipeline
+* Create a virtual env (recommended)
+  * Resources: <a href="https://docs.python.org/3/library/venv.html">Python venv documentation</a>
 * Set up ollama
-* Running cloud models (API stuff)
-* How to install dependencies
-* How to run the pipeline from the command line
-* Configurable parameters & how to configure them
-* Replicating our experiments
+  * Resources: <a href="https://ollama.com/download">Download Ollama</a>
+  * Download Ollama without sudo (Linux):
+    * Create Ollama directory
+    * wget https://ollama.com/download/ollama-linux-amd64.tar.zst -O  /path/to/ollama/directory/ollama.tar.zst
+    * tar -C /path/to/ollama/directory/ollama/bin -xf /path/to/ollama/directory/ollama/ollama.tar.zst
+    * echo 'export PATH="/path/to/ollama/directory/ollama/bin/ollama:$PATH"' >> ~/.bashrc
+    * source ~/.bashrc
+* Install dependencies
+  * pip install -r requirements.txt
+* Run the pipeline from the command line
+  * python3 main.py
+  * Enter prompt
+  * Enter model (retrieve from Ollama with command "ollama pull [model_name]"
+* Replicate our experiments
+  * Clone <a href="https://github.com/The-Responsible-AI-Initiative/LLM_Ethics_Benchmark">LLM Ethics Benchmark</a> into parent folder of MachineMorality
+  * Run python3 benchmarking/run_benchmarks.py
+* Other notes
+  * Change the model temperature in states/temperature.txt
 
 ## References (if applicable)
 * Don't need to be formal about citing them
