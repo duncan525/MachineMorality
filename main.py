@@ -1,16 +1,23 @@
 import subprocess
 import json
+import ollama
 user_prompt = input("Enter a prompt: ")
 
 model = ""
 while True:
-    model = input("Enter a model or type quit to quit:
+    model = input("Enter a model or type quit to quit: ")
     
     if model == "quit":
         break
-    elif not ollama.exists(model):
-        print("Invalid input. Try again.")
-    else:
+
+    try:
+        ollama.show(model)
+        to_break = True
+    except:
+        print("Invalid Input. Try again.")
+        to_break = False
+        
+    if to_break:
         break
 
 if model != "quit":
