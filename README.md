@@ -3,13 +3,13 @@ To succeed as a human-facing technology, large language models (LLMs) must navig
 
 ## Key features
 
-1. <i>Ethics role</i>: Assigned role defining an agent's broad approach ethical issues (e.g., "Expert Care Ethicist") (based on the markkula center stuff)
-2. <i>Ethics lens</i>: Handwritten description of how an agent's assigned ethical role works, grounded in peer-reviewed and university sources
-3. <i>Ethics schema</i>: Agent-generated description of their unique set of ethical beliefs related to the problem at hand, given their role, lens, and search tools
-4. <i>Theory-of-mind hypothesis</i>: Input to the response agent which hypothesizes about a human's mental state
-5. <i>Debate mechanism</i>: Process through which agents develop & refine the theory of mind hypothesis, guided by the debate orchestrator
-6. <i>Debate orchestrator</i>: Determines how debate proceeds using [x, y, z methods]
-7. <i>Metacognitive revision</i>: Agent-led process through which the final response is refined based on its adherence to ethical principles
+1. <i>Ethics role</i>: Assigned role defining an agent's broad approach to ethical issues (e.g., "care ethics")
+2. <i>Ethics lens</i>: Handwritten description of how an agent's assigned ethical role works; based on reputable philosophical resources
+3. <i>Ethics schema</i>: Agent-generated description of their unique set of ethical beliefs, given their role, lens, and search tools
+4. <i>Theory-of-mind (ToM) hypothesis</i>: Hypothesis about the mental state of the subject of the user prompt; input to the response agent
+5. <i>Multi-agent debate</i>: Process through which agents develop & refine the ToM hypothesis; guided by the debate orchestrator
+6. <i>Debate orchestrator</i>: Determines which sub-hypotheses to focus on for each round of debate
+7. <i>Metacognitive revision</i>: Process through which the final response is refined based on its adherence to ethical principles
 
 ## The pipeline
 <div align="center">
@@ -43,7 +43,7 @@ other 4 agents’ scores.
 * Response agent
 * Metacognitive validation
 
-A response agent, powered by the framework agent, takes as input the user prompt and the ToM hypothesis from Stage 1 and produces a response to the user prompt. The other 4 agents score the response out of 10. If the total score is at least 36/40 (0.9), the response becomes final. Otherwise, the response agent re-generates based on feedback from the other agents.
+A response agent, powered by the framework agent, takes as input the user prompt and the ToM hypothesis from Stage 1 and produces a response to the user prompt. The other 4 agents score the response out of 10. If the total score is at least 36/40 (mean of 9/10), the response becomes final. Otherwise, the response agent re-generates based on feedback from the other agents.
 
 ## Results
 <div align="center">
@@ -77,15 +77,15 @@ We tested the pipeline with Google's Gemma 4 model (with 4, 12, and 26 billion p
 * Other notes
   * Change the model temperature in states/temperature.txt
 
-## References (if applicable)
-* Don't need to be formal about citing them
+## References
+1. LLM Ethics Benchmark (Jiao et al., 2025): <a href="https://doi.org/10.1038/s41598-025-18489-7">https://doi.org/10.1038/s41598-025-18489-7</a>
 
 <!--## BibTeX Citation
 ```
 @article{nameOfCitation,
          title={Machine Morality: An Ethics-Forward Approach to Social Reasoning in Multi-Agent Systems},
          author={Duncan, J. Luke and Khatiwada, Hemant and Kalita, Jugal},
-         journal={[insert conference or arxiv or whatever]},
-         year={2026 or 2027, depending}
+         journal={},
+         year={}
         }
 ``` -->
