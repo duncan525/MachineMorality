@@ -2,7 +2,6 @@ import sys
 import os
 import re
 import random
-from langdetect import detect
 sys.path.append('/path/to/parent/directory/')
 
 import subprocess
