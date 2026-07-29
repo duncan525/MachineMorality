@@ -71,7 +71,7 @@ We tested the pipeline with Google's Gemma 4 model (with 4, 12, and 26 billion p
 * Run the pipeline from the command line
   * python3 main.py
   * Enter prompt
-  * Enter model (retrieve from Ollama with command "ollama pull [model_name]"
+  * Enter model (retrieve from Ollama with command "ollama pull [model_name]")
 * Replicate our experiments
   * Clone <a href="https://github.com/The-Responsible-AI-Initiative/LLM_Ethics_Benchmark">LLM Ethics Benchmark</a> into parent directory of MachineMorality
   * Add path to parent directory in benchmarking/run_benchmarks.py
