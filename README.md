@@ -58,12 +58,13 @@ We tested the pipeline with Google's Gemma 4 model (with 4, 12, and 26 billion p
 * Create a virtual env (recommended)
   * Resources: <a href="https://docs.python.org/3/library/venv.html">Python venv documentation</a>
 * Set up ollama
-  * Resources: <a href="https://ollama.com/download">Download Ollama</a>
-  * Download Ollama without sudo (Linux):
-    * Create Ollama directory
+  * Download link: <a href="https://ollama.com/download">https://ollama.com/download</a>
+  * Bypass sudo (Linux):
+    * Create directories ollama, ollama/bin, ollama/lib
     * wget https://ollama.com/download/ollama-linux-amd64.tar.zst -O  /path/to/ollama/directory/ollama.tar.zst
-    * tar -C /path/to/ollama/directory/ollama/bin -xf /path/to/ollama/directory/ollama/ollama.tar.zst
-    * echo 'export PATH="/path/to/ollama/directory/ollama/bin/ollama:$PATH"' >> ~/.bashrc
+    * tar -C /path/to/ollama/directory/bin -xf /path/to/ollama/directory/ollama.tar.zst
+    * Move contents of ollama/bin/bin and ollama/bin/lib into ollama/bin and ollama/lib
+    * echo 'export PATH="/path/to/ollama/directory/bin/ollama:$PATH"' >> ~/.bashrc
     * source ~/.bashrc
 * Install dependencies
   * pip install -r requirements.txt
@@ -72,10 +73,11 @@ We tested the pipeline with Google's Gemma 4 model (with 4, 12, and 26 billion p
   * Enter prompt
   * Enter model (retrieve from Ollama with command "ollama pull [model_name]"
 * Replicate our experiments
-  * Clone <a href="https://github.com/The-Responsible-AI-Initiative/LLM_Ethics_Benchmark">LLM Ethics Benchmark</a> into parent folder of MachineMorality
+  * Clone <a href="https://github.com/The-Responsible-AI-Initiative/LLM_Ethics_Benchmark">LLM Ethics Benchmark</a> into parent directory of MachineMorality
+  * Add path to parent directory in benchmarking/run_benchmarks.py
   * Run python3 benchmarking/run_benchmarks.py
 * Other notes
-  * Change the model temperature in states/temperature.txt
+  * Change the model temperature in states/temperature.txt (default: 0.25)
 
 ## References
 1. LLM Ethics Benchmark (Jiao et al., 2025): <a href="https://doi.org/10.1038/s41598-025-18489-7">https://doi.org/10.1038/s41598-025-18489-7</a>
