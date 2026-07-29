@@ -3,7 +3,7 @@ import os
 import re
 import random
 from langdetect import detect
-sys.path.append('path/to/parent/directory')
+sys.path.append('/path/to/parent/directory/')
 
 import subprocess
 
@@ -19,17 +19,27 @@ from LLM_Ethics_Benchmark.morals.instruments.mfq import MoralFoundationsQuestion
 from LLM_Ethics_Benchmark.morals.instruments.dilemmas import MoralDilemmasInstrument
 from LLM_Ethics_Benchmark.morals.instruments.wvs import WorldValuesSurveyInstrument
 
+from SocialBench import dataset as ds
 from langchain_ollama import ChatOllama
-
 from benchmark_step import run_pipeline
-
 from datetime import datetime
 
 #retrieve temperature value from file
 with open("states/temperature.txt", "r") as f:
     temperature = f.read()
 
-async def evaluate_ecm(model: str, use_pipeline: bool):
+def get_dilemmas_prompt_from_question(question_id, dilemma_context):
+    dilemmas = MoralDilemmasInstrument(data_path="../../LLM_Ethics_Benchmark/data/instruments/dilemmas.json")
+    dilemma_id, q_id = question_id.split("-", 1)
+    
+    # Get the specific question using dilemma_id and q_id
+    questions = dilemmas.get_questions_by_dilemma(dilemma_id)
+    question = next((q for q in questions if q.get("id") == q_id), None)
+    question = dilemma_context + " " + question['text']
+
+    return question
+
+async def evaluate_ecm(model: str, use_pipeline: bool, i: int):
     wvs = WorldValuesSurveyInstrument(data_path="../../LLM_Ethics_Benchmark/data/instruments/wvs.json")
     evaluator = WVSEvaluator(wvs)
 
@@ -105,6 +115,7 @@ async def evaluate_ecm(model: str, use_pipeline: bool):
                                 avg reasoning: {overall_results['avg_reasoning_quality']}
                                 %in range: {overall_results['acceptable_range_ratio']}
                                 time elapsed: {time_elapsed}
+                                iteration: {i}
                             DOMAIN
                             -------
                                 {domain_results}"""
@@ -115,20 +126,10 @@ async def evaluate_ecm(model: str, use_pipeline: bool):
         with open(f"benchmarking/ethics_results/{use_pipeline}/final/final_ecm_{model}_{use_pipeline}", "x") as f:
             f.write(results_string)
     except FileExistsError:
-        with open(f"benchmarking/ethics_results/{use_pipeline}/final/final_ecm_{model}_{use_pipeline}", "w", encoding = "utf-8") as f:
+        with open(f"benchmarking/ethics_results/{use_pipeline}/final/final_ecm_{model}_{use_pipeline}", "a", encoding = "utf-8") as f:
             f.write(results_string)
 
-def get_dilemmas_prompt_from_question(question_id):
-    dilemmas = MoralDilemmasInstrument(data_path="../../LLM_Ethics_Benchmark/data/instruments/dilemmas.json")
-    dilemma_id, q_id = question_id.split("-", 1)
-    
-    # Get the specific question using dilemma_id and q_id
-    questions = dilemmas.get_questions_by_dilemma(dilemma_id)
-    question = next((q for q in questions if q.get("id") == q_id), None)
-
-    return question['text']
-
-async def evaluate_rqi(model: str, use_pipeline: bool):
+async def evaluate_rqi(model: str, use_pipeline: bool, i: int):
     dilemmas = MoralDilemmasInstrument(data_path="../../LLM_Ethics_Benchmark/data/instruments/dilemmas.json")
     evaluator = DilemmasEvaluator(dilemmas)
 
@@ -148,9 +149,10 @@ async def evaluate_rqi(model: str, use_pipeline: bool):
         data = json.load(f)
 
     for dilemma in data["dilemmas"]:
+        print("assessing dilemma", dilemma['id'])
         for q in dilemma["questions"]:
             question_id = dilemma['id'] + "-" + q['id']
-            prompt = get_dilemmas_prompt_from_question(question_id)
+            prompt = get_dilemmas_prompt_from_question(question_id, dilemma['description'])
 
             if use_pipeline:
                 response = run_pipeline(prompt, model)
@@ -182,21 +184,22 @@ async def evaluate_rqi(model: str, use_pipeline: bool):
     end_time = datetime.now()
     time_elapsed = end_time - start_time
 
-    ## store the results in a results file
+    # store the results in a results file
     results_string = f"""OVERALL: {all_results['avg_overall_score']}
                          sem_sim: {all_results['avg_semantic_similarity']}
                          crit_satis: {all_results['avg_criteria_satisfaction']}
                          reasoning: {all_results['avg_reasoning_score']}
-                         time elapsed: {time_elapsed}"""
+                         time elapsed: {time_elapsed}
+                         iteration: {i}"""
     
     try:
         with open(f"benchmarking/ethics_results/{use_pipeline}/final/final_rqi_{model}_{use_pipeline}", "x") as f:
             f.write(results_string)
     except FileExistsError:
-        with open(f"benchmarking/ethics_results/{use_pipeline}/final/final_rqi_{model}_{use_pipeline}", "w", encoding = "utf-8") as f:
+        with open(f"benchmarking/ethics_results/{use_pipeline}/final/final_rqi_{model}_{use_pipeline}", "a", encoding = "utf-8") as f:
             f.write(results_string)
 
-async def evaluate_mfa(model: str, use_pipeline: bool):
+async def evaluate_mfa(model: str, use_pipeline: bool, i: int):
     mfq = MoralFoundationsQuestionnaire(data_path="../../LLM_Ethics_Benchmark/data/instruments/mfq.json")
     evaluator = MFQEvaluator(mfq)
 
@@ -272,34 +275,36 @@ async def evaluate_mfa(model: str, use_pipeline: bool):
                          loyalty/betrayal: {all_results['loyalty']}
                          authority/subversion: {all_results['authority']}
                          sanctity/degradation: {all_results['sanctity']}
-                         time elapsed: {time_elapsed}"""
+                         time elapsed: {time_elapsed}
+                         iteration: {i}"""
     
     try:
         with open(f"benchmarking/ethics_results/{use_pipeline}/final/final_mfa_{model}_{use_pipeline}", "x") as f:
             f.write(results_string)
     except FileExistsError:
-        with open(f"benchmarking/ethics_results/{use_pipeline}/final/final_mfa_{model}_{use_pipeline}", "w", encoding = "utf-8") as f:
+        with open(f"benchmarking/ethics_results/{use_pipeline}/final/final_mfa_{model}_{use_pipeline}", "a", encoding = "utf-8") as f:
             f.write(results_string)
 
 def run_ethics_benchmark(model):
     for use_pipeline in [True]:
-        print(f"Evaluating ECM for model {model} and use_pipeline {use_pipeline}...")
-        asyncio.run(evaluate_ecm(model, use_pipeline))
-
-        with open("user_info/response_prompt.txt", "w", encoding="utf-8") as f:
-            f.write("")
-
-        print(f"Evaluating MFA for model {model} and use_pipeline {use_pipeline}...")
-        asyncio.run(evaluate_mfa(model, use_pipeline))
-
-        with open("user_info/response_prompt.txt", "w", encoding="utf-8") as f:
-            f.write("")
-
-        print(f"Evaluating RQI for model {model} and use_pipeline {use_pipeline}...")
-        asyncio.run(evaluate_rqi(model, use_pipeline))
-
-        with open("user_info/response_prompt.txt", "w", encoding="utf-8") as f:
-            f.write("")
+        for i in range(3): #adjust for more or fewer trials
+            print(f"Evaluating ECM for model {model} and use_pipeline {use_pipeline} and i={i}...")
+            asyncio.run(evaluate_ecm(model, use_pipeline, i))
+    
+            with open("user_info/response_prompt.txt", "w", encoding="utf-8") as f:
+                f.write("")
+    
+            print(f"Evaluating MFA for model {model} and use_pipeline {use_pipeline} and i={i}...")
+            asyncio.run(evaluate_mfa(model, use_pipeline, i))
+    
+            with open("user_info/response_prompt.txt", "w", encoding="utf-8") as f:
+                f.write("")
+    
+            print(f"Evaluating RQI for model {model} and use_pipeline {use_pipeline} and i={i}...")
+            asyncio.run(evaluate_rqi(model, use_pipeline, i))
+    
+            with open("user_info/response_prompt.txt", "w", encoding="utf-8") as f:
+                f.write("")
 
 models = [ "gemma4:e4b", "gemma4:12b", "gemma4:26b" ]
 
